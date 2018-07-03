@@ -3,7 +3,7 @@ package com.tetrun.game.handlers;
 import com.badlogic.gdx.physics.box2d.*;
 
 public class MyContactListener implements ContactListener{
-    private boolean playerOnGround;
+    private int numFootContacts;
 
     @Override
     public void beginContact(Contact contact) {
@@ -12,11 +12,11 @@ public class MyContactListener implements ContactListener{
 
         if(fa.getUserData() != null && fa.getUserData().equals("foot"))
         {
-            playerOnGround = true;
+            numFootContacts++;
         }
         if(fb.getUserData() != null && fb.getUserData().equals("foot"))
         {
-            playerOnGround = true;
+            numFootContacts++;
         }
     }
 
@@ -27,15 +27,15 @@ public class MyContactListener implements ContactListener{
 
         if(fa.getUserData() != null && fa.getUserData().equals("foot"))
         {
-            playerOnGround = false;
+            numFootContacts--;
         }
         if(fb.getUserData() != null && fb.getUserData().equals("foot"))
         {
-            playerOnGround = false;
+            numFootContacts--;
         }
     }
 
-    public boolean isPlayerOnGround() { return playerOnGround; }
+    public boolean isPlayerOnGround() { return numFootContacts > 0; }
 
     @Override
     public void preSolve(Contact contact, Manifold oldManifold) {

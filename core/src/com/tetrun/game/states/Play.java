@@ -1,15 +1,18 @@
 package com.tetrun.game.states;
 
+import static com.tetrun.game.handlers.B2DVars.BIT_GROUND;
+import static com.tetrun.game.handlers.B2DVars.BIT_PLAYER;
 import static com.tetrun.game.handlers.B2DVars.PPM;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
-import com.tetrun.game.handlers.B2DVars;
-import com.tetrun.game.handlers.GameStateManager;
-import com.tetrun.game.handlers.MyContactListener;
-import com.tetrun.game.handlers.MyInput;
+import com.tetrun.game.handlers.*;
 import com.tetrun.game.main.Game;
 
 import java.util.ArrayList;
@@ -24,6 +27,10 @@ public class Play extends GameState {
     private ArrayList<Body> mapBodys = new ArrayList<Body>();
     private Body playerBody;
     private MyContactListener cl;
+
+    private TiledMap tileMap;
+    private float tileSize;
+    private OrthoCachedTiledMapRenderer tmr;
 
     public Play(GameStateManager gsm) {
         super(gsm);
@@ -59,12 +66,58 @@ public class Play extends GameState {
         playerBody.createFixture(fixtureDef).setUserData("foot");
 
         // Flatform 생성
-        createFlatform(30, 60, 60, 15);
-        createFlatform(200, 30, 60, 15);
+        // createFlatform(30, 60, 60, 15);
+        // createFlatform(200, 30, 60, 15);
 
         // box2d 카메라 설정
         b2dCam = new OrthographicCamera();
         b2dCam.setToOrtho(false, Game.V_WIDTH / PPM, Game.V_HEIGHT / PPM);
+
+
+        // ---------------------------------------------------------------------
+
+        tileMap = new TmxMapLoader().load("maps/blocks.tmx");
+        tmr = new OrthoCachedTiledMapRenderer(tileMap);
+
+        TiledMapTileLayer layer =
+                (TiledMapTileLayer) tileMap.getLayers().get("layer1");
+
+        tileSize = layer.getTileWidth();
+
+        for(int x = 0; x < layer.getWidth(); x++)
+        {
+            for(int y = 0; y < layer.getHeight(); y++)
+            {
+                TiledMapTileLayer.Cell cell = layer.getCell(x, y);
+
+                if(cell == null)
+                    continue;
+                if(cell.getTile() == null)
+                    continue;
+
+                bodyDef.type = BodyDef.BodyType.StaticBody;
+                bodyDef.position.set(
+                        (x + 0.5f) * tileSize / PPM,
+                        (y + 0.5f) * tileSize / PPM
+                );
+
+                ChainShape cs = new ChainShape();
+                Vector2[] v = new Vector2[3];
+                v[0] = new Vector2(-tileSize / 2 / PPM, -tileSize / 2 / PPM);
+                v[1] = new Vector2(-tileSize / 2 / PPM, tileSize / 2 / PPM);
+                v[2] = new Vector2(tileSize / 2 / PPM, tileSize / 2 / PPM);
+
+                cs.createChain(v);
+                fixtureDef.friction = 0;
+                fixtureDef.shape = cs;
+                fixtureDef.filter.categoryBits = BIT_GROUND;
+                fixtureDef.filter.maskBits = BIT_PLAYER;
+                fixtureDef.isSensor = false;
+                Body b = world.createBody(bodyDef);
+                b.createFixture(fixtureDef);
+                mapBodys.add(b);
+            }
+        }
     }
 
     @Override
@@ -87,17 +140,23 @@ public class Play extends GameState {
         // 맵 이동
         for(Body b: mapBodys)
         {
-            b.setTransform(b.getTransform().getPosition().x + dt, b.getTransform().getPosition().y, 0);
+            b.setTransform(b.getTransform().getPosition().x - dt, b.getTransform().getPosition().y, 0);
         }
 
         // player 물리 계산 실행
         playerBody.setAwake(true);
+        if(playerBody.getPosition().x != 250 / PPM)
+            System.out.println("게임 오버!");
         world.step(dt, 6, 2);
     }
 
     @Override
     public void render() {
         Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        tmr.setView(cam);
+        tmr.render();
+
         b2dr.render(world, b2dCam.combined);
     }
 
