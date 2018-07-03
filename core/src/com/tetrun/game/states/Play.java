@@ -12,79 +12,86 @@ import com.tetrun.game.handlers.MyContactListener;
 import com.tetrun.game.handlers.MyInput;
 import com.tetrun.game.main.Game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Play extends GameState {
-    private float mapPos = 0;
     private World world;
     private Box2DDebugRenderer b2dr;
 
     private OrthographicCamera b2dCam;
 
-    private Body mapBody;
+    private ArrayList<Body> mapBodys = new ArrayList<Body>();
     private Body playerBody;
     private MyContactListener cl;
 
     public Play(GameStateManager gsm) {
         super(gsm);
 
+        // ContractListener 생성
         cl = new MyContactListener();
 
+        // World 생성
         world = new World(new Vector2(0, -9.18f), true);
         world.setContactListener(cl);
         b2dr = new Box2DDebugRenderer();
 
-        // create platform
+        // Player 생성
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set((160 + mapPos) / PPM, 120 / PPM);
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        mapBody = world.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(90 / PPM, 15 / PPM);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.filter.categoryBits = B2DVars.BIT_GROUND;
-        fixtureDef.filter.maskBits = B2DVars.BIT_PLAYER;
-        mapBody.createFixture(fixtureDef).setUserData("Ground");
-
-        // create player
-        bodyDef.position.set(160 / PPM, 200 / PPM);
+        bodyDef.position.set(250 / PPM, 200 / PPM);
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         playerBody = world.createBody(bodyDef);
 
+        PolygonShape shape = new PolygonShape();
         shape.setAsBox(15 / PPM, 15 / PPM);
+        FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.filter.categoryBits = B2DVars.BIT_PLAYER;
         fixtureDef.filter.maskBits = B2DVars.BIT_GROUND;
         playerBody.createFixture(fixtureDef).setUserData("Player");
 
-        // create foot sensor
-        shape.setAsBox(2 / PPM, 2 / PPM, new Vector2(0, -15/PPM), 0);
+        // Player 지면 센서 생성
+        shape.setAsBox(14 / PPM, 2 / PPM, new Vector2(0, -15/PPM), 0);
         fixtureDef.shape = shape;
         fixtureDef.filter.categoryBits = B2DVars.BIT_PLAYER;
         fixtureDef.filter.maskBits = B2DVars.BIT_GROUND;
         fixtureDef.isSensor = true;
         playerBody.createFixture(fixtureDef).setUserData("foot");
 
-        // set up box2d cam
+        // Flatform 생성
+        createFlatform(30, 60, 60, 15);
+        createFlatform(200, 30, 60, 15);
+
+        // box2d 카메라 설정
         b2dCam = new OrthographicCamera();
         b2dCam.setToOrtho(false, Game.V_WIDTH / PPM, Game.V_HEIGHT / PPM);
     }
 
     @Override
     public void handleInput() {
+        // BUTTON1 (z) 입력 구현
         if(MyInput.isPressed(MyInput.BUTTON1) && cl.isPlayerOnGround())
         {
             playerBody.applyForceToCenter(0, 200, true);
+        }
+        if(MyInput.isPressed(MyInput.BUTTON2))
+        {
+            createFlatform(40, 40, 60, 15);
         }
     }
 
     @Override
     public void update(float dt) {
         handleInput();
-        mapPos += dt * 20;
-        mapBody.setTransform((160 + mapPos) / PPM, 120 / PPM, 0);
-        System.out.println(mapPos);
+
+        // 맵 이동
+        for(Body b: mapBodys)
+        {
+            b.setTransform(b.getTransform().getPosition().x + dt, b.getTransform().getPosition().y, 0);
+        }
+
+        // player 물리 계산 실행
+        playerBody.setAwake(true);
         world.step(dt, 6, 2);
     }
 
@@ -95,7 +102,26 @@ public class Play extends GameState {
     }
 
     @Override
-    public void dispose() {
+    public void dispose()
+    {
 
+    }
+
+    private void createFlatform(float posX, float posY, float sizeX, float sizeY)
+    {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(posX / PPM, posY / PPM);
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(sizeX / PPM, sizeY / PPM);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.filter.categoryBits = B2DVars.BIT_GROUND;
+        fixtureDef.filter.maskBits = B2DVars.BIT_PLAYER;
+        body.createFixture(fixtureDef).setUserData("Ground");
+        mapBodys.add(body);
     }
 }
