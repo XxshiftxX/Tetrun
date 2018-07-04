@@ -59,11 +59,6 @@ public class Game extends ApplicationAdapter {
 			gsm.render();
 			MyInput.update();
 		}
-
-		sb.setProjectionMatrix(hudCam.combined);
-		sb.begin();
-		sb.draw(res.getTexture("player"), 0, 0);
-		sb.end();
 	}
 
 	@Override

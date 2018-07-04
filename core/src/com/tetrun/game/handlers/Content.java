@@ -8,11 +8,6 @@ import java.util.HashMap;
 public class Content {
     private HashMap<String, Texture> textures = new HashMap<String, Texture>();
 
-    public Content()
-    {
-
-    }
-
     public void loadTexture(String path, String key)
     {
         Texture tex = new Texture(Gdx.files.internal(path));
