@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.tetrun.game.handlers.Content;
 import com.tetrun.game.handlers.GameStateManager;
 import com.tetrun.game.handlers.MyInput;
 import com.tetrun.game.handlers.MyInputProcessor;
@@ -27,20 +28,23 @@ public class Game extends ApplicationAdapter {
 
 	private GameStateManager gsm;
 
+	public static Content res = new Content();
+
 	public SpriteBatch getSpriteBatch() { return sb; }
 	public OrthographicCamera getCamera() { return cam; }
 	public OrthographicCamera getHUDCamera() { return hudCam; }
 
 	@Override
 	public void create() {
-
 		Gdx.input.setInputProcessor(new MyInputProcessor());
+
+		res.loadTexture("sprites/player_blue.png", "player");
 
 		sb = new SpriteBatch();
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, V_WIDTH, V_HEIGHT);
 		hudCam = new OrthographicCamera();
-		hudCam.setToOrtho(false, V_WIDTH, V_HEIGHT);
+		hudCam.setToOrtho(false, V_WIDTH * 20, V_HEIGHT * 20);
 
 		gsm = new GameStateManager(this);
 	}
