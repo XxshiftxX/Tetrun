@@ -1,4 +1,4 @@
-package com.tetrun.game.handlers;
+--package com.tetrun.game.handlers;
 
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
