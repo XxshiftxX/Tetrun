@@ -12,6 +12,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthoCachedTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.tetrun.game.entities.B2DSprite;
 import com.tetrun.game.entities.Player;
 import com.tetrun.game.handlers.*;
 import com.tetrun.game.main.Game;
@@ -35,6 +36,7 @@ public class Play extends GameState {
     private Player player;
 
     public Play(GameStateManager gsm) {
+
         super(gsm);
 
         // World 생성
@@ -70,7 +72,7 @@ public class Play extends GameState {
         // 맵 이동
         for(Body b: mapBodys)
         {
-            b.setTransform(b.getTransform().getPosition().x - dt, b.getTransform().getPosition().y, 0);
+            //b.setTransform(b.getTransform().getPosition().x - dt, b.getTransform().getPosition().y, 0);
         }
 
         // player 물리 계산 실행
@@ -79,6 +81,7 @@ public class Play extends GameState {
             System.out.println("게임 오버!");
 
         world.step(dt, 6, 2);
+        player.update(dt);
     }
 
     @Override
@@ -91,7 +94,7 @@ public class Play extends GameState {
         sb.setProjectionMatrix(cam.combined);
         player.render(sb);
 
-        b2dr.render(world, b2dCam.combined);
+        //b2dr.render(world, b2dCam.combined);
     }
 
     @Override
@@ -126,6 +129,7 @@ public class Play extends GameState {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         Body playerBody = world.createBody(bodyDef);
 
+
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(15 / PPM, 30 / PPM);
         FixtureDef fixtureDef = new FixtureDef();
@@ -147,15 +151,20 @@ public class Play extends GameState {
 
     private void createTiles()
     {
-        BodyDef bodyDef = new BodyDef();
-        FixtureDef fixtureDef = new FixtureDef();
         tileMap = new TmxMapLoader().load("maps/blocks.tmx");
         tmr = new OrthoCachedTiledMapRenderer(tileMap);
 
-        TiledMapTileLayer layer =
-                (TiledMapTileLayer) tileMap.getLayers().get("layer1");
+        tileSize = (Integer)tileMap.getProperties().get("tilewidth");
 
-        tileSize = layer.getTileWidth();
+        TiledMapTileLayer layer;
+
+        layer = (TiledMapTileLayer) tileMap.getLayers().get("layer1");
+        createLayer(layer, BIT_GROUND);
+    }
+    private void createLayer(TiledMapTileLayer layer, short bits)
+    {
+        BodyDef bodyDef = new BodyDef();
+        FixtureDef fixtureDef = new FixtureDef();
 
         for(int x = 0; x < layer.getWidth(); x++)
         {
@@ -183,7 +192,7 @@ public class Play extends GameState {
                 cs.createChain(v);
                 fixtureDef.friction = 0;
                 fixtureDef.shape = cs;
-                fixtureDef.filter.categoryBits = BIT_GROUND;
+                fixtureDef.filter.categoryBits = bits;
                 fixtureDef.filter.maskBits = BIT_PLAYER;
                 fixtureDef.isSensor = false;
                 Body b = world.createBody(bodyDef);

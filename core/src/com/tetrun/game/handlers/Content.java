@@ -15,6 +15,7 @@ public class Content {
     }
 
     public Texture getTexture(String key) { return textures.get(key); }
+
     public void disposeTexture(String key) {
         Texture tex = textures.get(key);
         if(tex != null)

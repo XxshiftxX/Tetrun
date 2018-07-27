@@ -36,8 +36,9 @@ public class B2DSprite {
         spriteBatchs.begin();
         spriteBatchs.draw(
                 animation.getFrame(),
-                body.getPosition().x * B2DVars.PPM / 2,
-                body.getPosition().y * B2DVars.PPM / 2);
+                body.getPosition().x * B2DVars.PPM - width / 15 / 2,
+                body.getPosition().y * B2DVars.PPM - height / 15 / 2 + 12,
+                width / 15, height / 15);
         spriteBatchs.end();
     }
 

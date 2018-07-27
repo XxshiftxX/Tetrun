@@ -14,7 +14,7 @@ public class Player extends B2DSprite {
         super(body);
 
         Texture tex = Game.res.getTexture("player");
-        TextureRegion[] sprites = TextureRegion.split(tex, 110, 80)[0];
+        TextureRegion[] sprites = TextureRegion.split(tex, 7600 / 8, 1299)[0];
 
         setAnimation(sprites, 1/12f);
     }
