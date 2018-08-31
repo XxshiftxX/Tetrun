@@ -3,7 +3,11 @@ package com.mygdx.game.entities;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.tetrun;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.mygdx.game.Game;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Mino implements IDrawable
@@ -20,6 +24,7 @@ public class Mino implements IDrawable
     public Mino(Texture texture, MinoType minoType, Vector2 pos) {
         this.texture = texture;
         this.minoType = minoType;
+        position = pos;
 
         switch(minoType)
         {
@@ -38,21 +43,38 @@ public class Mino implements IDrawable
                 };
                 break;
         }
-        position = pos;
+
+        //Confirm();
     }
 
     @Override
-    public void Update() {
+    public void Update(long deltaTIme) {
 
     }
 
     @Override
     public void Render(SpriteBatch sb) {
-        sb.draw(texture, position.x * tetrun.UNIT, position.y * tetrun.UNIT, tetrun.UNIT, tetrun.UNIT);
+        sb.draw(texture, position.x * Game.UNIT, position.y * Game.UNIT, Game.UNIT, Game.UNIT);
 
         // 중심축 기준으로 shape에 있는 나머지 블럭을 Draw
         for(Vector2 v: shape)
-            sb.draw(texture, (position.x + v.x) * tetrun.UNIT, (position.y + v.y) * tetrun.UNIT, tetrun.UNIT, tetrun.UNIT);
+            sb.draw(texture, (position.x + v.x) * Game.UNIT, (position.y + v.y) * Game.UNIT, Game.UNIT, Game.UNIT);
+    }
+
+    public void Confirm()
+    {
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(Game.UNIT, Game.UNIT);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(position.x * Game.UNIT, position.y * Game.UNIT);
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+
+        Body body = Game.world.createBody(bodyDef);
+        body.createFixture(fixtureDef);
     }
 
     public void Spin()
