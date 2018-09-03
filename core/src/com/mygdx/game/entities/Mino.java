@@ -28,15 +28,25 @@ public class Mino implements IDrawable
 
         switch(minoType)
         {
+            case T:
+                shape = new Vector2[]{
+                        new Vector2(0, 0),
+                        new Vector2(-1, 0),
+                        new Vector2(1, 0),
+                        new Vector2(0, -1)
+                };
+                break;
             case L:
                 shape = new Vector2[]{
-                    new Vector2(0, -1),
-                    new Vector2(0, 1),
-                    new Vector2(1, -1)
+                        new Vector2(0, 0),
+                        new Vector2(0, -1),
+                        new Vector2(0, 1),
+                        new Vector2(1, -1)
                 };
                 break;
             case J:
                 shape = new Vector2[]{
+                        new Vector2(0, 0),
                         new Vector2(0, -1),
                         new Vector2(0, 1),
                         new Vector2(-1, -1)
@@ -48,15 +58,13 @@ public class Mino implements IDrawable
     }
 
     @Override
-    public void Update(long deltaTIme) {
+    public void Update(float deltaTIme) {
 
     }
 
     @Override
     public void Render(SpriteBatch sb) {
-        sb.draw(texture, position.x * Game.UNIT, position.y * Game.UNIT, Game.UNIT, Game.UNIT);
-
-        // 중심축 기준으로 shape에 있는 나머지 블럭을 Draw
+//        // 중심축 기준으로 shape에 있는 나머지 블럭을 Draw
         for(Vector2 v: shape)
             sb.draw(texture, (position.x + v.x) * Game.UNIT, (position.y + v.y) * Game.UNIT, Game.UNIT, Game.UNIT);
     }

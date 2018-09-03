@@ -11,6 +11,7 @@ import com.mygdx.game.entities.Mino;
 import com.mygdx.game.entities.MinoType;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.handlers.GameStateManager;
+import com.mygdx.game.handlers.Input;
 
 import java.util.ArrayList;
 
@@ -22,7 +23,7 @@ public class Play extends GameState {
     {
         super(gsm);
 
-        drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.L, new Vector2(10, 10)));
+        drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.T, new Vector2(10, 10)));
         drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.L, new Vector2(7, 8)));
         drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.J, new Vector2(3, 10)));
         drawables.add(new Player());
@@ -31,17 +32,34 @@ public class Play extends GameState {
     @Override
     public void handleInput() {
 
+        if(Input.isPressed(Input.BUTTON1)){
+
+
+            System.out.println("pressed z");
+        }
+        if(Input.isDown((Input.BUTTON2))){
+
+
+            System.out.println("hold X");
+        }
     }
 
     @Override
     public void update(float dt) {
-        Mino m = (Mino)(drawables.get(0));
-        m.position.x += 0.1;
+
+        handleInput();
+
+        for(IDrawable drawable: drawables)
+            drawable.Update(dt);
+
+//        Mino m = (Mino)(drawables.get(0));
+//        m.position.x += 0.1;
     }
 
     @Override
     public void render() {
-        Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        Gdx.gl20.glClear(0x00004000);
+        Gdx.gl20.glClearColor(0.2f, 0, 0, 1);
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
         for(IDrawable drawable: drawables)

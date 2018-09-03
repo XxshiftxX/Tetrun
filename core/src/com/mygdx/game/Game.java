@@ -17,6 +17,8 @@ import com.mygdx.game.entities.Mino;
 import com.mygdx.game.entities.MinoType;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.handlers.GameStateManager;
+import com.mygdx.game.handlers.Input;
+import com.mygdx.game.handlers.InputProcessor;
 
 import java.util.ArrayList;
 
@@ -38,6 +40,8 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void create ()
 	{
+		Gdx.input.setInputProcessor(new InputProcessor());
+
 		batch = new SpriteBatch();
 		cam = new OrthographicCamera();
 		cam.setToOrtho(false, V_WIDTH, V_HEIGHT);
@@ -55,6 +59,7 @@ public class Game extends ApplicationAdapter {
 			accum -= STEP;
 			gsm.update(STEP);
 			gsm.render();
+			Input.update();
 		}
 	}
 	
