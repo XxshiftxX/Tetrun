@@ -35,8 +35,8 @@ public class Play extends GameState {
 
     @Override
     public void update(float dt) {
-        Mino m = (Mino)(drawables.get(0));
-        m.position.x += 0.1;
+        for(IDrawable drawable: drawables)
+            drawable.Update(dt);
     }
 
     @Override

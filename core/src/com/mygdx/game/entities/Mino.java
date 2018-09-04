@@ -48,7 +48,7 @@ public class Mino implements IDrawable
     }
 
     @Override
-    public void Update(long deltaTIme) {
+    public void Update(float deltaTIme) {
 
     }
 

@@ -7,7 +7,7 @@ public class Player implements IDrawable {
     private long preUpdateTime = 0;
 
     @Override
-    public void Update(long deltaTime) {
+    public void Update(float deltaTime) {
         System.out.println(deltaTime);
     }
 
