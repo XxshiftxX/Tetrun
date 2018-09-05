@@ -7,8 +7,13 @@ gwt {
     minHeapSize="1G"
 
     src = files(file("src/")) // Needs to be in front of "modules" below.
+<<<<<<< HEAD
     modules 'com.tetrun.game.GdxDefinition'
     devModules 'com.tetrun.game.GdxDefinitionSuperdev'
+=======
+    modules 'com.mygdx.game.GdxDefinition'
+    devModules 'com.mygdx.game.GdxDefinitionSuperdev'
+>>>>>>> origin/byeonggwan
     project.webAppDirName = 'webapp'
 
     compiler {
