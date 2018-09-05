@@ -1,5 +1,6 @@
 package com.mygdx.game.entities;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -19,54 +20,57 @@ public class Mino implements IDrawable
     // 블럭 위치
     public Vector2 position;
     // 블럭 모양
-    private Vector2[] shape;
+    private Vector2[][] shape = new Vector2[4][4];
+    private int direction = 0;          // 블럭 방향
+    private int color = 0;              // 블럭 색상
+    private boolean isPutted = false;   // 블럭이 놓여졌는지 확인
+
+    public Mino()
+    {
+        texture = new Texture(Gdx.files.internal("badlogic.jpg"));
+        position = new Vector2();
+    }
 
     public Mino(Texture texture, MinoType minoType, Vector2 pos) {
         this.texture = texture;
         this.minoType = minoType;
         position = pos;
 
-        switch(minoType)
-        {
-            case T:
-                shape = new Vector2[]{
-                        new Vector2(0, 0),
-                        new Vector2(-1, 0),
-                        new Vector2(1, 0),
-                        new Vector2(0, -1)
-                };
-                break;
-            case L:
-                shape = new Vector2[]{
-                        new Vector2(0, 0),
-                        new Vector2(0, -1),
-                        new Vector2(0, 1),
-                        new Vector2(1, -1)
-                };
-                break;
-            case J:
-                shape = new Vector2[]{
-                        new Vector2(0, 0),
-                        new Vector2(0, -1),
-                        new Vector2(0, 1),
-                        new Vector2(-1, -1)
-                };
-                break;
-        }
-
         //Confirm();
+    }
+
+    public Vector2[][] getShape() {
+        return shape;
+    }
+
+
+    public void SetPosition(float x, float y)
+    {
+        this.position.x = x;
+        this.position.y = y;
     }
 
     @Override
     public void Update(float deltaTIme) {
-
+        if(isPutted)
+            position.x += 0.1f;
     }
 
     @Override
     public void Render(SpriteBatch sb) {
 //        // 중심축 기준으로 shape에 있는 나머지 블럭을 Draw
-        for(Vector2 v: shape)
+        for (Vector2 v : shape[direction]) {
             sb.draw(texture, (position.x + v.x) * Game.UNIT, (position.y + v.y) * Game.UNIT, Game.UNIT, Game.UNIT);
+        }
+    }
+
+    // MinoContainter로 부터 Mino 원형을 지정받기 위한 Setter
+    public void SetMino(Vector2 mino[][])
+    {
+        for(int i = 0; i < 4; ++i)
+        {
+            shape[i] = mino[i].clone();
+        }
     }
 
     public void Confirm()

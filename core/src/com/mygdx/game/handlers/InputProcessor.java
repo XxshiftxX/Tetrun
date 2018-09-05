@@ -12,6 +12,18 @@ public class InputProcessor extends InputAdapter{
         if(k == Keys.X) {
             Input.setKeys(Input.BUTTON2, true);
         }
+        if(k == Keys.LEFT) {
+            Input.setKeys(Input.LEFT, true);
+        }
+        if(k == Keys.UP) {
+            Input.setKeys(Input.UP, true);
+        }
+        if(k == Keys.RIGHT) {
+            Input.setKeys(Input.RIGHT, true);
+        }
+        if(k == Keys.DOWN) {
+            Input.setKeys(Input.DOWN, true);
+        }
 
         return true;
     }
@@ -22,6 +34,18 @@ public class InputProcessor extends InputAdapter{
         }
         if(k == Keys.X) {
             Input.setKeys(Input.BUTTON2, false);
+        }
+        if(k == Keys.LEFT) {
+            Input.setKeys(Input.LEFT, false);
+        }
+        if(k == Keys.UP) {
+            Input.setKeys(Input.UP, false);
+        }
+        if(k == Keys.RIGHT) {
+            Input.setKeys(Input.RIGHT, false);
+        }
+        if(k == Keys.DOWN) {
+            Input.setKeys(Input.DOWN, false);
         }
 
         return true;

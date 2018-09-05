@@ -12,20 +12,21 @@ import com.mygdx.game.entities.MinoType;
 import com.mygdx.game.entities.Player;
 import com.mygdx.game.handlers.GameStateManager;
 import com.mygdx.game.handlers.Input;
+import com.mygdx.game.handlers.MinoQueue;
 
 import java.util.ArrayList;
 
 public class Play extends GameState {
     private BitmapFont font = new BitmapFont();
     private ArrayList<IDrawable> drawables = new ArrayList<IDrawable>();
+    private MinoQueue minoQueue = new MinoQueue();
 
     public Play(GameStateManager gsm)
     {
         super(gsm);
 
-        drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.T, new Vector2(10, 10)));
-        drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.L, new Vector2(7, 8)));
-        drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.J, new Vector2(3, 10)));
+        minoQueue.DecideMino();
+        //drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.J, new Vector2(3, 10)));
         drawables.add(new Player());
     }
 
@@ -42,6 +43,23 @@ public class Play extends GameState {
 
             System.out.println("hold X");
         }
+
+        if(Input.isPressed(Input.LEFT)){
+
+        }
+
+        if(Input.isPressed(Input.RIGHT)){
+
+        }
+
+        if(Input.isPressed(Input.UP)){
+
+        }
+
+        if(Input.isPressed(Input.DOWN)){
+
+        }
+
     }
 
     @Override
@@ -49,11 +67,10 @@ public class Play extends GameState {
 
         handleInput();
 
+        for(Mino mino : minoQueue.GetMinos())
+            mino.Update(dt);
         for(IDrawable drawable: drawables)
             drawable.Update(dt);
-
-//        Mino m = (Mino)(drawables.get(0));
-//        m.position.x += 0.1;
     }
 
     @Override
@@ -62,6 +79,10 @@ public class Play extends GameState {
         Gdx.gl20.glClearColor(0.2f, 0, 0, 1);
         sb.setProjectionMatrix(cam.combined);
         sb.begin();
+
+        for(Mino mino : minoQueue.GetMinos())
+            mino.Render(sb);
+
         for(IDrawable drawable: drawables)
         {
             drawable.Render(sb);

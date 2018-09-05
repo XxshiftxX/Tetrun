@@ -8,13 +8,15 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.Game;
 
 public class Player implements IDrawable {
+    // Player Info
     private Texture texture;
     private TextureRegion[] animSprites;
     private Vector2 pos;
+
+    // Animation
     private float timeSum = 0.0f;
     private float cycleTime = 0.05f;
     private int animIndex = 0;
-
     private static final int width = 4;
 
     public Player()
@@ -22,6 +24,11 @@ public class Player implements IDrawable {
         this.texture = new Texture(Gdx.files.internal("Sprite/Character_blue.png"));
         animSprites = TextureRegion.split(texture, 737 / width, 283)[0];
         pos = new Vector2(1, 10);
+    }
+
+    public void Jump()
+    {
+
     }
 
     @Override

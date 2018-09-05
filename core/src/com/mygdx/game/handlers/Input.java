@@ -8,6 +8,11 @@ public class Input {
     public static final int BUTTON1 = 0;
     public static final int BUTTON2 = 1;
 
+    public static final int LEFT = 3;
+    public static final int UP = 4;
+    public static final int RIGHT = 5;
+    public static final int DOWN = 6;
+
     static {
         keys = new boolean[NUM_KEYS];
         pkeys = new boolean[NUM_KEYS];
