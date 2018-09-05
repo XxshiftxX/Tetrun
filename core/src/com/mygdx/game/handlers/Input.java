@@ -4,7 +4,7 @@ public class Input {
     public static boolean[] keys;
     public static boolean[] pkeys;
 
-    public static final int NUM_KEYS = 2;
+    public static final int NUM_KEYS = 7;
     public static final int BUTTON1 = 0;
     public static final int BUTTON2 = 1;
 

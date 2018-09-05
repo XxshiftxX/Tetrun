@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.game.entities.IDrawable;
 import com.mygdx.game.entities.Mino;
 import com.mygdx.game.entities.MinoType;
@@ -17,7 +18,12 @@ import com.mygdx.game.handlers.MinoQueue;
 import java.util.ArrayList;
 
 public class Play extends GameState {
-    private BitmapFont font = new BitmapFont();
+    public static Play currentPlay;
+    public Boolean isMinoMoving = false;
+    public World world;
+    private Box2DDebugRenderer b2dr;
+    private float minoSpeed = 2000;
+    private float minoMoveTimeStack = 0;
     private ArrayList<IDrawable> drawables = new ArrayList<IDrawable>();
     private MinoQueue minoQueue = new MinoQueue();
 
@@ -25,8 +31,23 @@ public class Play extends GameState {
     {
         super(gsm);
 
+        world = new World(new Vector2(0, -9.8f), true);
+        b2dr = new Box2DDebugRenderer();
+
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.position.set(160, 120);
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        Body body = world.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(50, 5);
+
+        FixtureDef fdef = new FixtureDef();
+        fdef.shape = shape;
+        body.createFixture(fdef);
+
+        currentPlay = this;
         minoQueue.DecideMino();
-        //drawables.add(new Mino(new Texture(Gdx.files.internal("badlogic.jpg")), MinoType.J, new Vector2(3, 10)));
         drawables.add(new Player());
     }
 
@@ -45,11 +66,15 @@ public class Play extends GameState {
         }
 
         if(Input.isPressed(Input.LEFT)){
-
+            minoQueue.GetMinos()[0].Confirm();
         }
 
         if(Input.isPressed(Input.RIGHT)){
+            minoQueue.GetMinos()[0].direction++;
+            if(minoQueue.GetMinos()[0].direction >= 4)
+                minoQueue.GetMinos()[0].direction = 0;
 
+            minoQueue.GetMinos()[0].Confirm();
         }
 
         if(Input.isPressed(Input.UP)){
@@ -64,8 +89,13 @@ public class Play extends GameState {
 
     @Override
     public void update(float dt) {
-
+        world.step(dt, 6, 2);
+        minoMoveTimeStack += dt;
         handleInput();
+
+        if(isMinoMoving) isMinoMoving = false;
+        if(minoMoveTimeStack > minoSpeed)
+            minoMoveTimeStack %= minoSpeed;
 
         for(Mino mino : minoQueue.GetMinos())
             mino.Update(dt);
@@ -88,10 +118,11 @@ public class Play extends GameState {
             drawable.Render(sb);
         }
         sb.end();
+        b2dr.render(world, cam.combined);
     }
 
     @Override
     public void dispose() {
-
+        currentPlay = null;
     }
 }

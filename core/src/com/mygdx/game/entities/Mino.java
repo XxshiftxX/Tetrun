@@ -4,11 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.game.Game;
+import com.mygdx.game.states.Play;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class Mino implements IDrawable
@@ -21,9 +20,10 @@ public class Mino implements IDrawable
     public Vector2 position;
     // 블럭 모양
     private Vector2[][] shape = new Vector2[4][4];
-    private int direction = 0;          // 블럭 방향
+    public int direction = 0;          // 블럭 방향
     private int color = 0;              // 블럭 색상
     private boolean isPutted = false;   // 블럭이 놓여졌는지 확인
+    private Body body;
 
     public Mino()
     {
@@ -52,13 +52,13 @@ public class Mino implements IDrawable
 
     @Override
     public void Update(float deltaTIme) {
-        if(isPutted)
-            position.x += 0.1f;
+        if(isPutted && Play.currentPlay.isMinoMoving)
+            position.x += 1;
     }
 
     @Override
     public void Render(SpriteBatch sb) {
-//        // 중심축 기준으로 shape에 있는 나머지 블럭을 Draw
+        // 중심축 기준으로 shape에 있는 나머지 블럭을 Draw
         for (Vector2 v : shape[direction]) {
             sb.draw(texture, (position.x + v.x) * Game.UNIT, (position.y + v.y) * Game.UNIT, Game.UNIT, Game.UNIT);
         }
@@ -75,18 +75,23 @@ public class Mino implements IDrawable
 
     public void Confirm()
     {
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox(Game.UNIT, Game.UNIT);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
+        if(body != null)
+            Play.currentPlay.world.destroyBody(body);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.position.set(position.x * Game.UNIT, position.y * Game.UNIT);
         bodyDef.type = BodyDef.BodyType.StaticBody;
 
-        Body body = Game.world.createBody(bodyDef);
-        body.createFixture(fixtureDef);
+        body = Play.currentPlay.world.createBody(bodyDef);
+
+        for(Vector2 v: shape[direction]) {
+            PolygonShape shape = new PolygonShape();
+            shape.setAsBox(Game.UNIT / 2, Game.UNIT / 2, new Vector2(v.x * Game.UNIT + Game.UNIT / 2, v.y * Game.UNIT + Game.UNIT / 2), 0);
+
+            FixtureDef fixtureDef = new FixtureDef();
+            fixtureDef.shape = shape;
+            body.createFixture(fixtureDef);
+        }
     }
 
     public void Spin()
