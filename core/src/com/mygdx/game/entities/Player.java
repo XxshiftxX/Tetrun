@@ -12,12 +12,20 @@ public class Player implements IDrawable {
     private Texture texture;
     private TextureRegion[] animSprites;
     private Vector2 pos;
+    private boolean isJumped = false;
+
+
+    private static final float JUMP_HEIGHT = 5.0f;
+    public static final float JUMP_SPEED = 0.5f;
 
     // Animation
+    private boolean isDowning = false;
     private float timeSum = 0.0f;
     private float cycleTime = 0.05f;
     private int animIndex = 0;
-    private static final int width = 4;
+    private float originY;
+    private int width = 4;
+    private float deltaSum;
 
     public Player()
     {
@@ -28,7 +36,18 @@ public class Player implements IDrawable {
 
     public void Jump()
     {
+        isJumped = true;
+        SetOriginHeight();
+    }
 
+    public Vector2 GetPos()
+    {
+        return pos;
+    }
+
+    private void SetOriginHeight()
+    {
+        originY = pos.y;
     }
 
     @Override
@@ -42,6 +61,26 @@ public class Player implements IDrawable {
             if(animIndex == width)
                 animIndex = 0;
         }
+
+        if(isJumped)
+        {
+            deltaSum += deltaTime * 5;
+            if(isDowning)
+            {
+                pos.y -= deltaSum;
+            }
+            else {
+
+                if (pos.y <= originY + JUMP_HEIGHT) {
+                    pos.y += deltaSum;
+                } else {
+                    isDowning = true;
+                    deltaSum = 0.0f;
+                }
+
+            }
+        }
+
     }
 
     @Override
